@@ -66,7 +66,7 @@ async def on_guild_remove(guild:discord.Guild):
 
 @bot.slash_command(name="kreacher-clear", description="Clear chat history with Kreacher.")
 @commands.is_owner()
-async def clear(ctx : discord.Interaction):
+async def kreacher_clear(ctx : discord.Interaction):
     await chatcontext_clear(ctx.guild.id)
     await ctx.response.send_message(f"Done. Context:```{await get_guild_x(ctx.guild.id,'chatcontext')}```", ephemeral=True)
 
@@ -74,7 +74,7 @@ async def clear(ctx : discord.Interaction):
 
 @bot.slash_command(name="kreacher", description="Ask Kreacher a question")
 @commands.cooldown(1, 60, commands.BucketType.guild)  
-async def chat(ctx : discord.Message, *, text):
+async def kreacher(ctx : discord.Message, *, text):
     try:
         text = text.lower()
         author = ctx.author.display_name
