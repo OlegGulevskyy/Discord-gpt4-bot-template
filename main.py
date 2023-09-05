@@ -72,7 +72,7 @@ async def kreacher_clear(ctx : discord.Interaction):
 
 
 
-@bot.slash_command(name="kreacher", description="Ask Kreacher a question")
+@bot.command(name="kreacher", description="Ask Kreacher a question")
 @commands.cooldown(1, 60, commands.BucketType.guild)  
 async def kreacher(ctx : discord.Message, *, text):
     try:
@@ -135,9 +135,9 @@ async def kreacher(ctx : discord.Message, *, text):
             async with ctx.channel.typing():
                 for i in range(0, len(message_content), 2000): 
                     if i == 0:
-                        await ctx.response.send_message(message_content[i:i+2000])
+                        await ctx.reply(message_content[i:i+2000])
                     else:
-                        await ctx.response.send_message(message_content[i:i+2000])
+                        await ctx.channel.send(message_content[i:i+2000])
 
             await chatcontext_append(ctx.guild.id, f'{author}: {text}')
             await chatcontext_append(ctx.guild.id,f'bot: {str(response["choices"][0]["message"]["content"].strip())}')
