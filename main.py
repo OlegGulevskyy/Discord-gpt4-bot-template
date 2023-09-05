@@ -97,7 +97,7 @@ async def on_message(message):
                     if delta < timedelta(seconds=60):
                         print("too early", delta.seconds, message.id)
                         too_early = True
-                        message.reply(f"I am AFK! Try again in {60 - delta.seconds} seconds.")
+                        await message.reply(f"I am AFK! Try again in {60 - delta.seconds} seconds.")
 
                 if too_early:
                     return
