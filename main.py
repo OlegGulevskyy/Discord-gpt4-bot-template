@@ -95,7 +95,7 @@ async def on_message(message):
                     delta = now - last_time
                     if delta < timedelta(seconds=60):
                         print("too early", delta.seconds, message.id)
-                        await message.reply(f"I am AFK! Try again in {60 - delta.seconds} seconds.")
+                        # await message.reply(f"I am AFK! Try again in {60 - delta.seconds} seconds.")
                         return
 
                 # If the user is not in cooldown, proceed
