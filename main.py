@@ -75,6 +75,9 @@ cooldowns = {}
 
 @bot.event
 async def on_message(message):
+    if message.author.id == bot.user.id:
+        return
+
     if bot.user.mentioned_in(message) and message.mention_everyone is False:
         async with message.channel.typing():
             try:
