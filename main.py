@@ -132,12 +132,11 @@ async def kreacher(ctx : discord.Message, *, text):
             
             
             message_content = response["choices"][0]["message"]["content"].strip()
+            message_parts = [message_content[i:i+2000] for i in range(0, len(message_content), 2000)]
             async with ctx.channel.typing():
-                for i in range(0, len(message_content), 2000): 
-                    if i == 0:
-                        await ctx.reply(message_content[i:i+2000])
-                    else:
-                        await ctx.channel.send(message_content[i:i+2000])
+                for part in message_parts:
+                    await ctx.reply(part)
+                    # await ctx.channel.send(message_content[i:i+2000])
 
             await chatcontext_append(ctx.guild.id, f'{author}: {text}')
             await chatcontext_append(ctx.guild.id,f'bot: {str(response["choices"][0]["message"]["content"].strip())}')
