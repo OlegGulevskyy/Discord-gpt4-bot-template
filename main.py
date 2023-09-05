@@ -130,10 +130,10 @@ async def on_message(message):
                 print(f"!chat THREW: {e}")
 
 
-@kreacher.error
-async def kreacher_error(ctx, error):
-	if isinstance(error, commands.CommandOnCooldown):	
-            await ctx.reply(f"Chatting too fast! {round(error.retry_after, 1)} seconds left")
+# @kreacher.error
+# async def kreacher_error(ctx, error):
+# 	if isinstance(error, commands.CommandOnCooldown):
+#             await ctx.reply(f"Chatting too fast! {round(error.retry_after, 1)} seconds left")
 
 
 
