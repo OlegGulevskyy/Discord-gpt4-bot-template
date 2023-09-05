@@ -64,7 +64,7 @@ async def on_guild_remove(guild:discord.Guild):
 
 
 
-@bot.slash_command(name="clear", description="Clear chat context.")
+@bot.slash_command(name="kreacher-clear", description="Clear chat history with Kreacher.")
 @commands.is_owner()
 async def clear(ctx : discord.Interaction):
     await chatcontext_clear(ctx.guild.id)
@@ -72,7 +72,7 @@ async def clear(ctx : discord.Interaction):
 
 
 
-@bot.command(name="chat", description="Chat with me.")
+@bot.slash_command(name="kreacher", description="Ask Kreacher a question")
 @commands.cooldown(1, 60, commands.BucketType.guild)  
 async def chat(ctx : discord.Message, *, text):
     try:
@@ -150,7 +150,7 @@ async def chat(ctx : discord.Message, *, text):
 
 
     except Exception as e:
-        await ctx.reply("Error")
+        # await ctx.reply("Error")
         print(f"!chat THREW: {e}")
         
 
