@@ -84,6 +84,8 @@ async def on_message(message):
 
                 now = datetime.now()
 
+                user_id = message.author.id
+                guild_id = message.guild.id
                 # Checking if the user is in cooldowns and if they are still in the cooldown period
                 if f"{user_id}-{guild_id}" in cooldowns:
                     last_time = cooldowns[f"{user_id}-{guild_id}"]
