@@ -135,7 +135,6 @@ async def kreacher(ctx : discord.Message, *, text):
             async with ctx.channel.typing():
                 for i in range(0, len(message_content), 2000): 
                     if i == 0:
-                        await ctx.reply(message_content[i:i+2000])
                         await ctx.response.send_message(message_content[i:i+2000])
                     else:
                         await ctx.response.send_message(message_content[i:i+2000])
