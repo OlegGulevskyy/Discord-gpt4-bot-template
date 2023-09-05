@@ -86,14 +86,18 @@ async def on_message(message):
 
                 user_id = message.author.id
                 guild_id = message.guild.id
+                too_early = False
                 # Checking if the user is in cooldowns and if they are still in the cooldown period
                 if f"{user_id}-{guild_id}" in cooldowns:
                     last_time = cooldowns[f"{user_id}-{guild_id}"]
                     delta = now - last_time
                     if delta < timedelta(seconds=60):
                         print("too early", delta.seconds, message.id)
+                        too_early = True
                         await message.reply(f"I am AFK! Try again in {60 - delta.seconds} seconds.")
-                        return
+
+                if too_early:
+                    return
 
                 # If the user is not in cooldown, proceed
                 cooldowns[f"{user_id}-{guild_id}"] = now
