@@ -1,4 +1,5 @@
 import os, json, logging, asyncpg, asyncio
+from datetime import datetime, timedelta
 
 import discord
 from discord.ext import commands
@@ -70,6 +71,7 @@ async def kreacher_clear(ctx : discord.Interaction):
     await chatcontext_clear(ctx.guild.id)
     await ctx.response.send_message(f"Done. Context:```{await get_guild_x(ctx.guild.id,'chatcontext')}```", ephemeral=True)
 
+cooldowns = {}
 
 @bot.event
 async def on_message(message):
@@ -79,6 +81,19 @@ async def on_message(message):
                 text = message.content.lower().replace(f'<@!{bot.user.id}>', '').strip()  # Remove mention
                 author = message.author.display_name
                 chatcontext = await get_guild_x(message.guild.id, "chatcontext")
+
+                now = datetime.now()
+
+                # Checking if the user is in cooldowns and if they are still in the cooldown period
+                if f"{user_id}-{guild_id}" in cooldowns:
+                    last_time = cooldowns[f"{user_id}-{guild_id}"]
+                    delta = now - last_time
+                    if delta < timedelta(seconds=60):
+                        await message.reply(f"I am AFK! Try again in {60 - delta.seconds} seconds.")
+                        return
+
+                # If the user is not in cooldown, proceed
+                cooldowns[f"{user_id}-{guild_id}"] = now
                 
                 if not chatcontext:
                     chatcontext = []
@@ -128,13 +143,6 @@ async def on_message(message):
                     
             except Exception as e:
                 print(f"!chat THREW: {e}")
-
-
-# @kreacher.error
-# async def kreacher_error(ctx, error):
-# 	if isinstance(error, commands.CommandOnCooldown):
-#             await ctx.reply(f"Chatting too fast! {round(error.retry_after, 1)} seconds left")
-
 
 
 async def get_guild_x(guild, x):
