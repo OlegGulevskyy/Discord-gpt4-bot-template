@@ -79,28 +79,27 @@ async def on_message(message):
         return
 
     if bot.user.mentioned_in(message) and message.mention_everyone is False:
-        # Check cooldown first
-        now = datetime.now()
-        user_id = message.author.id
-        guild_id = message.guild.id
-        # Checking if the user is in cooldowns and if they are still in the cooldown period
-        if f"{user_id}-{guild_id}" in cooldowns:
-            last_time = cooldowns[f"{user_id}-{guild_id}"]
-            delta = now - last_time
-            if delta < timedelta(seconds=60):
-                print("too early", delta.seconds, message.id)
-                await message.reply(f"I am AFK! Try again in {60 - delta.seconds} seconds.")
-                return
-
-        # If the user is not in cooldown, proceed
-        cooldowns[f"{user_id}-{guild_id}"] = now
-
         async with message.channel.typing():
             try:
                 text = message.content.lower().replace(f'<@!{bot.user.id}>', '').strip()  # Remove mention
                 author = message.author.display_name
                 chatcontext = await get_guild_x(message.guild.id, "chatcontext")
 
+                now = datetime.now()
+
+                user_id = message.author.id
+                guild_id = message.guild.id
+                # Checking if the user is in cooldowns and if they are still in the cooldown period
+                if f"{user_id}-{guild_id}" in cooldowns:
+                    last_time = cooldowns[f"{user_id}-{guild_id}"]
+                    delta = now - last_time
+                    if delta < timedelta(seconds=60):
+                        print("too early", delta.seconds, message.id)
+                        # await message.reply(f"I am AFK! Try again in {60 - delta.seconds} seconds.")
+                        return
+
+                # If the user is not in cooldown, proceed
+                cooldowns[f"{user_id}-{guild_id}"] = now
                 
                 if not chatcontext:
                     chatcontext = []
