@@ -155,8 +155,8 @@ async def kreacher(ctx : discord.Message, *, text):
         
 
 
-@chat.error
-async def chat_error(ctx, error):
+@kreacher.error
+async def kreacher_error(ctx, error):
 	if isinstance(error, commands.CommandOnCooldown):	
             await ctx.reply(f"Chatting too fast! {round(error.retry_after, 2)} seconds left")
 
