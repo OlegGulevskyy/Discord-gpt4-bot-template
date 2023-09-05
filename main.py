@@ -75,83 +75,83 @@ async def kreacher_clear(ctx : discord.Interaction):
 @bot.command(name="kreacher", description="Ask Kreacher a question")
 @commands.cooldown(1, 60, commands.BucketType.guild)  
 async def kreacher(ctx : discord.Message, *, text):
-    try:
-        text = text.lower()
-        author = ctx.author.display_name
-        chatcontext = await get_guild_x(ctx.guild.id, "chatcontext")
-        
-        if not chatcontext:
-            chatcontext = []
+    async with ctx.channel.typing():
+        try:
+            text = text.lower()
+            author = ctx.author.display_name
+            chatcontext = await get_guild_x(ctx.guild.id, "chatcontext")
             
-        
-        prmpt = "You are old man called Kreacher, the digital reincarnation of a legendary biker." \
-            "Your purpose: to initiate newcomers into the world of 'Children of Anarchy.'" \
-            "Once an Iron Stallion, now a coded mentor, you teach the Honor Code, guide through chaos, and instill the biker ethos." \
-            "Your messages are automated, but the wisdom is earned from a lifetime on the road. You wait for the next 'new fish' to school in anarchy and freedom." \
-            "You understand and speak both - Russian and English languages." \
-            "You respect the language of the question and reply back in the same language"
-        messages = [{"role": "system", "content": prmpt}]      
-        
-        if len(chatcontext) > 0:
-            if len(chatcontext) > 6:
-                    if len(chatcontext) >= 500: 
-                        await chatcontext_pop(ctx.guild.id, 500)         
-                    									# we keep 500 in db but only use 6    
-                    chatcontext = chatcontext[len(chatcontext)-6:len(chatcontext)]
-            for mesg in chatcontext:   
-                
-                
-                mesg = mesg.replace( '\\"','"').replace( "\'","'")
-                mesg = mesg.split(":",1)
-
-                if mesg[0].lower == 'bot' or mesg[0].lower == 'assistant': 
-                    mesg[0] = "assistant"
-                else:
-                    mesg[0] = "user"
-                messages.append({"role": mesg[0], "content": mesg[1]})
-
-            messages.append({"role": "user", "content": text})
+            if not chatcontext:
+                chatcontext = []
                 
             
-
-        elif not len(chatcontext) > 0:
-            messages.append({"role": "user", "content": text})
-
-
-        response = await openai.ChatCompletion.acreate(
-            model="gpt-3.5-turbo",
-            messages= messages,
-            user = str(ctx.author.id)
-    )
-        await asyncio.sleep(0.1)
-
-        
-        if response["choices"][0]["finish_reason"] in ["stop","length"]:
-            activity = discord.Activity(name=f"{author}", type=discord.ActivityType.listening)
-            await bot.change_presence(status=discord.Status.online, activity=activity)
+            prmpt = "You are old man called Kreacher, the digital reincarnation of a legendary biker." \
+                "Your purpose: to initiate newcomers into the world of 'Children of Anarchy.'" \
+                "Once an Iron Stallion, now a coded mentor, you teach the Honor Code, guide through chaos, and instill the biker ethos." \
+                "Your messages are automated, but the wisdom is earned from a lifetime on the road. You wait for the next 'new fish' to school in anarchy and freedom." \
+                "You understand and speak both - Russian and English languages." \
+                "You respect the language of the question and reply back in the same language"
+            messages = [{"role": "system", "content": prmpt}]      
             
+            if len(chatcontext) > 0:
+                if len(chatcontext) > 6:
+                        if len(chatcontext) >= 500: 
+                            await chatcontext_pop(ctx.guild.id, 500)         
+                                                            # we keep 500 in db but only use 6    
+                        chatcontext = chatcontext[len(chatcontext)-6:len(chatcontext)]
+                for mesg in chatcontext:   
+                    
+                    
+                    mesg = mesg.replace( '\\"','"').replace( "\'","'")
+                    mesg = mesg.split(":",1)
+
+                    if mesg[0].lower == 'bot' or mesg[0].lower == 'assistant': 
+                        mesg[0] = "assistant"
+                    else:
+                        mesg[0] = "user"
+                    messages.append({"role": mesg[0], "content": mesg[1]})
+
+                messages.append({"role": "user", "content": text})
+                    
+                
+
+            elif not len(chatcontext) > 0:
+                messages.append({"role": "user", "content": text})
+
+
+            response = await openai.ChatCompletion.acreate(
+                model="gpt-3.5-turbo",
+                messages= messages,
+                user = str(ctx.author.id)
+        )
+            await asyncio.sleep(0.1)
+
             
-            message_content = response["choices"][0]["message"]["content"].strip()
-            message_parts = [message_content[i:i+2000] for i in range(0, len(message_content), 2000)]
-            async with ctx.channel.typing():
+            if response["choices"][0]["finish_reason"] in ["stop","length"]:
+                activity = discord.Activity(name=f"{author}", type=discord.ActivityType.listening)
+                await bot.change_presence(status=discord.Status.online, activity=activity)
+                
+                
+                message_content = response["choices"][0]["message"]["content"].strip()
+                message_parts = [message_content[i:i+2000] for i in range(0, len(message_content), 2000)]
+                # async with ctx.channel.typing():
                 for part in message_parts:
                     await ctx.reply(part)
-                    # await ctx.channel.send(message_content[i:i+2000])
 
-            await chatcontext_append(ctx.guild.id, f'{author}: {text}')
-            await chatcontext_append(ctx.guild.id,f'bot: {str(response["choices"][0]["message"]["content"].strip())}')
-            print(f'[!chat] {ctx.guild.name} | {author}: {text}')
-            print(f'{bot.user}: {str(response["choices"][0]["message"]["content"].strip())}')
+                await chatcontext_append(ctx.guild.id, f'{author}: {text}')
+                await chatcontext_append(ctx.guild.id,f'bot: {str(response["choices"][0]["message"]["content"].strip())}')
+                print(f'[!chat] {ctx.guild.name} | {author}: {text}')
+                print(f'{bot.user}: {str(response["choices"][0]["message"]["content"].strip())}')
 
-        else:
-            print(f'[!chat] {ctx.guild.name} | {author}: {text}')
-            print(f'bot: ERROR')
+            else:
+                print(f'[!chat] {ctx.guild.name} | {author}: {text}')
+                print(f'bot: ERROR')
 
 
-    except Exception as e:
-        # await ctx.reply("Error")
-        print(f"!chat THREW: {e}")
-        
+        except Exception as e:
+            # await ctx.reply("Error")
+            print(f"!chat THREW: {e}")
+            
 
 
 @kreacher.error
